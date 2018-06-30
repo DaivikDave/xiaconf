@@ -134,7 +134,8 @@ static int do_local(int argc, char **argv, int to_add)
 	  for(i=0; i<16; i++) {
 		str_xid += sprintf(str_xid, "%02x", ip_addr.s6_addr[i])
 	  }
-	  
+	  sprintf(str_xid,"%04x%08x",(in_port_t)ipport,0);
+	  str_xid = static_xid;
 	} else if (argc ==1) {
 	  /* User has given an XID. */
 	  str_xid = argv[0];
