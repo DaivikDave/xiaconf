@@ -3,6 +3,7 @@
 #include <string.h>
 #include <limits.h>
 #include <net/xia_fib.h>
+#include <net/xia_u6id.h>
 #include <xia_socket.h>
 #include <asm-generic/errno-base.h>
 
