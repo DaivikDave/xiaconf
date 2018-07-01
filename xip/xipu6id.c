@@ -71,8 +71,8 @@ static int do_local(int argc, char **argv, int to_add)
   char static_xid[XIA_MAX_STRID_SIZE];
   char *str_xid = &static_xid[0];
   struct local_u6id_info lu6id_info = {
-	.tunnel = false;
-	.checksum_disabled = false;
+	.tunnel = false,
+	.checksum_disabled = false
   };
   int tunnel = 0;
   int disable_checksum = 0;
@@ -82,7 +82,7 @@ static int do_local(int argc, char **argv, int to_add)
 
   while (argc > 1) {
 	char *opt = argv[argc - 1];
-	if(matches(opt, "-disable_checksum") == 0 {
+	if(matches(opt, "-disable_checksum") == 0 ){
 		disable_checksum++;
 		argc--;
 	  } else if(matches(opt, "-tunnel") == 0){
@@ -112,13 +112,16 @@ static int do_local(int argc, char **argv, int to_add)
 
 	  /* Convert IP address string to decimal number. */
 	  rc = inet_pton(AF_INET6, argv[0], &ip_addr);
-	  if(rc <= 0) {
-		fprintf(stderr, "Invalid IPv6 adress\n");
-		return usage();
-	  } else {
-		perror("inet_pton: cannot use IPv6 address");
-		exit(1);
-	  }
+	  if(rc <=0){
+		if(rc == 0) {
+			fprintf(stderr, "Invalid IPv6 adress\n");
+			return usage();
+	  	} else {
+			perror("inet_pton: cannot use IPv6 address");
+			exit(1);
+	  	}
+	  } 
+	  
 
 	  /* Convert port string to decimal number. */
 	  ip_port = strtol(argv[1], NULL, 0);
@@ -133,9 +136,9 @@ static int do_local(int argc, char **argv, int to_add)
 	  }
 	  int i;
 	  for(i=0; i<16; i++) {
-		str_xid += sprintf(str_xid, "%02x", ip_addr.s6_addr[i])
+		str_xid += sprintf(str_xid, "%02x", ip_addr.s6_addr[i]);
 	  }
-	  sprintf(str_xid,"%04x%08x",(in_port_t)ipport,0);
+	  sprintf(str_xid,"%04x%04x",(in_port_t)ip_port,0);
 	  str_xid = static_xid;
 	} else if (argc ==1) {
 	  /* User has given an XID. */
@@ -155,4 +158,31 @@ static int do_add(int argc, char **argv)
 static int do_del(int argc, char **argv)
 {
   return do_local(argc, argv, 0);
+}
+
+static int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg) {
+
+}
+
+static int do_show(int argc, char **argv) {
+
+}
+
+static int do_help(int argc, char **argv){
+    UNUSED(argc);
+    UNUSED(argv);
+    usage();
+    exit(1);
+}
+
+static const struct cmd cmds[] = {
+    { "add", do_add },
+    { "del", do_del },
+    { "show", do_show },
+    { "help", do_help},
+    {0,    0 }
+};
+
+int do_u6id(int argc, char **argv) {
+    return do_cmd(cmds, "Command", "xip u6id help", argc, argv);
 }
